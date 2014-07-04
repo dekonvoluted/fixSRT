@@ -108,6 +108,9 @@ fixEncoding()
         cat "${FILE}" > $tmpfile
     fi
 
+    # Remove any BOM, if present
+    sed --in-place 's/^\xef\xbb\xbf//' $tmpfile
+
     mv $tmpfile "${FILE}"
 }
 
