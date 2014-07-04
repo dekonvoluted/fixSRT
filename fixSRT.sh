@@ -44,6 +44,10 @@ die()
             echo $PROGNAME: ERROR. Unable to backup original file.;;
         5)
             echo $PROGNAME: ERROR. Encoding conversion failed.;;
+        6)
+            echo $PROGNAME: ERROR. Unable to overwrite file.;;
+        7)
+            echo $PROGNAME: ERROR. Clean up failed.;;
         *)
             true;;
     esac
@@ -122,9 +126,14 @@ fixDelayAndNumbering()
     local tmpfile=$(mktemp)
 
     local msDelay=$(echo $DELAY 1000 | awk '{printf "%.3f \n", $1/$2}')
-    srttool -r -d $msDelay -i $tmpfile > "${FILE}"
 
-    rm -f $tmpfile
+    if [ srttool -r -d $msDelay -i $tmpfile > "${FILE}" ]
+    then
+        rm -f $tmpfile
+    else
+        mv $tmpfile "${FILE}" || die 6
+        die 7
+    fi
 }
 
 main()
