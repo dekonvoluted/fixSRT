@@ -100,6 +100,7 @@ fixEncoding()
 
     cp "${FILE}" "${FILE%.srt}.old" || die 4
 
+    # Convert encoding to UTF-8
     if [ $encoding != utf-8 ]
     then
         iconv -c --from-code=$encoding --to-code=utf8 "${FILE}" > $tmpfile || die 5
