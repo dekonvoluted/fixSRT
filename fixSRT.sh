@@ -9,6 +9,9 @@
 # Requires iconv
 # Requires srttool
 
+readonly PROGNAME=$(basename $0)
+readonly ARGS="$@"
+
 printUsage()
 {
     cat <<- EOF
@@ -27,6 +30,71 @@ printUsage()
 	-h --help       Print this help message
 	EOF
 }
+
+die()
+{
+    case $1 in
+        1)
+            echo $PROGNAME: ERROR. Unable to parse arguments correctly.;;
+        2)
+            echo $PROGNAME: ERROR. File not found.;;
+        *)
+            true;;
+    esac
+    printUsage
+    exit $1
+}
+
+parseCommandLineArguments()
+{
+    # Check for successful parsing of options
+    args=$(getopt --name $PROGNAME --options "d:s:h" --longoptions "delay:,stretch:,help" -- ${ARGS})
+
+    [ $? -eq 0 ] || die 1
+
+    eval set -- "${args}"
+
+    # Parse options
+    while test $# -gt 0
+    do
+        case "${1}" in
+            -d|--delay)
+                local delay=$2
+                shift;;
+            -s|--stretch)
+                local stretch=$2
+                shift;;
+            -h|--help)
+                die 0;;
+            --)
+                shift
+                break;;
+            *)
+                shift
+                berak;;
+        esac
+        shift
+    done
+
+    readonly DELAY="${delay:-0}"
+    readonly STRETCH="${stretch:-1.0}"
+    readonly FILE="${@}"
+
+    # Check if a single, valid file is given
+    [ -r "${FILE}" ] || die 2
+}
+
+main()
+{
+    parseCommandLineArguments
+
+    # Output the arguments
+    echo "File:     ${FILE}"
+    echo "Delay:    ${DELAY} ms"
+    echo "Stretch:  ${STRETCH}"
+}
+
+main
 
 exit 0
 
