@@ -118,7 +118,7 @@ fixEncoding()
     sed --in-place 's/^\xef\xbb\xbf//' $tmpfile
 
     # Overwrite original file
-    mv $tmpfile "${FILE}"
+    mv $tmpfile "${FILE}" || die 6
 }
 
 fixDelayAndNumbering()
