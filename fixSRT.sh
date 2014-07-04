@@ -100,6 +100,8 @@ fixEncoding()
 
     cp "${FILE}" "${FILE%.srt}.old" || die 4
 
+    local tmpfile=$(mktemp)
+
     # Convert encoding to UTF-8
     if [ $encoding != utf-8 ]
     then
@@ -111,14 +113,13 @@ fixEncoding()
     # Remove any BOM, if present
     sed --in-place 's/^\xef\xbb\xbf//' $tmpfile
 
+    # Overwrite original file
     mv $tmpfile "${FILE}"
 }
 
 main()
 {
     parseCommandLineArguments
-
-    readonly tmpfile=$(mktemp)
 
     fixEncoding
 
