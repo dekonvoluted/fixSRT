@@ -7,7 +7,8 @@
 # Stretch SRT timings by specified factor (desired/current)
 
 # Requires iconv
-# Requires srttool
+# Requires transcode
+# Requires mkvtoolnix
 
 readonly PROGNAME=$(basename $0)
 readonly ARGS="$@"
@@ -47,7 +48,9 @@ die()
         6)
             echo $PROGNAME: ERROR. Unable to overwrite file.;;
         7)
-            echo $PROGNAME: ERROR. Clean up failed.;;
+            echo $PROGNAME: ERROR. Delay adjustment or renumbering failed.;;
+        8)
+            echo $PROGNAME: ERROR. Stretch failed.;;
         *)
             true;;
     esac
@@ -135,6 +138,24 @@ fixDelayAndNumbering()
     mv $tmpfile "${FILE}" || die 6
 }
 
+fixStretchFactor()
+{
+    local stretch=$(echo $STRETCH | awk '{printf "%.3f \n", $1}')
+
+    # Check if stretching is necessary
+    if [ $stretch == 1.000 ]
+    then
+        return
+    fi
+
+    local tmpfile=$(mktemp)
+
+    # Apply stretch
+    mkvmerge --quiet --output $tmpfile --sync 0:0,"${STRETCH}" "${FILE}" || die 8
+    mkvextract --quiet tracks $tmpfile 0:"${FILE}" || die 6
+    rm -f $tmpfile
+}
+
 main()
 {
     parseCommandLineArguments
@@ -142,6 +163,8 @@ main()
     fixEncoding
 
     fixDelayAndNumbering
+
+    fixStretchFactor
 
     # Output the arguments
     echo "File:     ${FILE}"
