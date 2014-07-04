@@ -92,10 +92,7 @@ fixEncoding()
     local filetype=$(echo $details | cut --delimiter=';' --fields=1)
     local encoding=$(echo $details | cut --delimiter='=' --fields=2)
 
-    if [ $filetype != "text/plain" ]
-    then
-        die 3
-    fi
+    [ $filetype == "text/plain" ] || die 3
 
     cp "${FILE}" "${FILE%.srt}.old"
 
