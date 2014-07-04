@@ -40,6 +40,10 @@ die()
             echo $PROGNAME: ERROR. File not found.;;
         3)
             echo $PROGNAME: ERROR. Unsupported encoding.;;
+        4)
+            echo $PROGNAME: ERROR. Unable to backup original file.;;
+        5)
+            echo $PROGNAME: ERROR. Encoding conversion failed.;;
         *)
             true;;
     esac
@@ -94,11 +98,11 @@ fixEncoding()
 
     [ $filetype == "text/plain" ] || die 3
 
-    cp "${FILE}" "${FILE%.srt}.old"
+    cp "${FILE}" "${FILE%.srt}.old" || die 4
 
     if [ $encoding != utf-8 ]
     then
-        iconv -c --from-code=$encoding --to-code=utf8 "${FILE}" > $tmpfile
+        iconv -c --from-code=$encoding --to-code=utf8 "${FILE}" > $tmpfile || die 5
     else
         cat "${FILE}" > $tmpfile
     fi
