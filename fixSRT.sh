@@ -89,8 +89,8 @@ parseCommandLineArguments()
         shift
     done
 
-    readonly DELAY="${delay:-0}"
-    readonly STRETCH="${stretch:-1.0}"
+    readonly DELAY=$(echo ${delay:-0} 1000 | awk '{printf "%.3f \n", $1/$2}')
+    readonly STRETCH=$(echo ${stretch:-1.0} | awk '{printf "%.3f \n", $1}')
     readonly FILE=$(realpath ${@})
 
     # Check if a single, valid file is given
@@ -128,11 +128,9 @@ fixDelayAndNumbering()
 {
     local tmpfile=$(mktemp)
 
-    local msDelay=$(echo $DELAY 1000 | awk '{printf "%.3f \n", $1/$2}')
-
     # Renumber the entries
     # Adjust delay if necessary
-    srttool -r -d $msDelay -i "${FILE}" > $tmpfile || die 7
+    srttool -r -d $DELAY -i "${FILE}" > $tmpfile || die 7
 
     # Overwrite original file
     mv $tmpfile "${FILE}" || die 6
@@ -140,10 +138,8 @@ fixDelayAndNumbering()
 
 fixStretchFactor()
 {
-    local stretch=$(echo $STRETCH | awk '{printf "%.3f \n", $1}')
-
     # Check if stretching is necessary
-    if [ $stretch == 1.000 ]
+    if [ $STRETCH == 1.000 ]
     then
         return
     fi
@@ -151,7 +147,7 @@ fixStretchFactor()
     local tmpfile=$(mktemp)
 
     # Apply stretch
-    mkvmerge --quiet --output $tmpfile --sync 0:0,"${STRETCH}" "${FILE}" || die 8
+    mkvmerge --quiet --output $tmpfile --sync 0:0,$STRETCH "${FILE}" || die 8
     mkvextract --quiet tracks $tmpfile 0:"${FILE}" || die 6
     rm -f $tmpfile
 }
