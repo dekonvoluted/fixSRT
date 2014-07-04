@@ -92,18 +92,28 @@ fixEncoding()
     local filetype=$(echo $details | cut --delimiter=';' --fields=1)
     local encoding=$(echo $details | cut --delimiter='=' --fields=2)
 
-    echo "Filetype: $filetype"
-    echo "Encoding: $encoding"
-
     if [ $filetype != "text/plain" ]
     then
         die 3
     fi
+
+    cp "${FILE}" "${FILE%.srt}.old"
+
+    if [ $encoding != utf-8 ]
+    then
+        iconv -c --from-code=$encoding --to-code=utf8 "${FILE}" > $tmpfile
+    else
+        cat "${FILE}" > $tmpfile
+    fi
+
+    mv $tmpfile "${FILE}"
 }
 
 main()
 {
     parseCommandLineArguments
+
+    readonly tmpfile=$(mktemp)
 
     fixEncoding
 
