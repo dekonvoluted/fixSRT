@@ -117,11 +117,23 @@ fixEncoding()
     mv $tmpfile "${FILE}"
 }
 
+fixDelayAndNumbering()
+{
+    local tmpfile=$(mktemp)
+
+    local msDelay=$(echo $DELAY 1000 | awk '{printf "%.3f \n", $1/$2}')
+    srttool -r -d $msDelay -i $tmpfile > "${FILE}"
+
+    rm -f $tmpfile
+}
+
 main()
 {
     parseCommandLineArguments
 
     fixEncoding
+
+    fixDelayAndNumbering
 
     # Output the arguments
     echo "File:     ${FILE}"
