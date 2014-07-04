@@ -86,7 +86,7 @@ parseCommandLineArguments()
     [ -r "${FILE}" ] || die 2
 }
 
-fixSRT()
+fixEncoding()
 {
     local details=$(file --brief --mime "${FILE}")
     local filetype=$(echo $details | cut --delimiter=';' --fields=1)
@@ -105,7 +105,7 @@ main()
 {
     parseCommandLineArguments
 
-    fixSRT
+    fixEncoding
 
     # Output the arguments
     echo "File:     ${FILE}"
