@@ -38,6 +38,8 @@ die()
             echo $PROGNAME: ERROR. Unable to parse arguments correctly.;;
         2)
             echo $PROGNAME: ERROR. File not found.;;
+        3)
+            echo $PROGNAME: ERROR. Unsupported encoding.;;
         *)
             true;;
     esac
@@ -84,9 +86,26 @@ parseCommandLineArguments()
     [ -r "${FILE}" ] || die 2
 }
 
+fixSRT()
+{
+    local details=$(file --brief --mime "${FILE}")
+    local filetype=$(echo $details | cut --delimiter=';' --fields=1)
+    local encoding=$(echo $details | cut --delimiter='=' --fields=2)
+
+    echo "Filetype: $filetype"
+    echo "Encoding: $encoding"
+
+    if [ $filetype != "text/plain" ]
+    then
+        die 3
+    fi
+}
+
 main()
 {
     parseCommandLineArguments
+
+    fixSRT
 
     # Output the arguments
     echo "File:     ${FILE}"
