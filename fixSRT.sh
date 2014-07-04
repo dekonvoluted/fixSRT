@@ -165,11 +165,6 @@ main()
     fixDelayAndNumbering
 
     fixStretchFactor
-
-    # Output the arguments
-    echo "File:     ${FILE}"
-    echo "Delay:    ${DELAY} ms"
-    echo "Stretch:  ${STRETCH}"
 }
 
 main
