@@ -12,10 +12,12 @@
 
 readonly PROGNAME=$(basename $0)
 readonly ARGS="$@"
+readonly VERSION=1.0
 
 printUsage()
 {
     cat <<- EOF
+	$PROGNAME version $VERSION
 	Usage $PROGNAME [options] FILE.srt
 
 	This script will clean up SRT files by converting the encoding to UTF-8, removing any BOM (byte-order marks) left in the resulting file.
