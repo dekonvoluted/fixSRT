@@ -80,7 +80,7 @@ parseCommandLineArguments()
 
     readonly DELAY="${delay:-0}"
     readonly STRETCH="${stretch:-1.0}"
-    readonly FILE="${@}"
+    readonly FILE=$(realpath ${@})
 
     # Check if a single, valid file is given
     [ -r "${FILE}" ] || die 2
