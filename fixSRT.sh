@@ -127,13 +127,12 @@ fixDelayAndNumbering()
 
     local msDelay=$(echo $DELAY 1000 | awk '{printf "%.3f \n", $1/$2}')
 
-    if [ srttool -r -d $msDelay -i $tmpfile > "${FILE}" ]
-    then
-        rm -f $tmpfile
-    else
-        mv $tmpfile "${FILE}" || die 6
-        die 7
-    fi
+    # Renumber the entries
+    # Adjust delay if necessary
+    srttool -r -d $msDelay -i "${FILE}" > $tmpfile || die 7
+
+    # Overwrite original file
+    mv $tmpfile "${FILE}" || die 6
 }
 
 main()
